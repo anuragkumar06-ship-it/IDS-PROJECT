@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IDS Project — Group 5 | BST Traversals</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM — Light Academic / Scholarly
+   ═══════════════════════════════════════════════ */
+:root {
+  --navy:       #0c1b3a;
+  --navy-mid:   #152952;
+  --navy-light: #1e3a6e;
+  --gold:       #c9a535;
+  --gold-light: #e8c95a;
+  --gold-pale:  #f5e9bb;
+  --cream:      #fafaf7;
+  --white:      #ffffff;
+  --ink:        #1a1a2e;
+  --ink-mid:    #2d3748;
+  --ink-dim:    #4a5568;
+  --ink-muted:  #718096;
+  --ink-faint:  #a0aec0;
+  --border:     #e2e0d8;
+  --border-mid: #cbd5e0;
+  --red:        #c0392b;
+  --green:      #27ae60;
+  --violet:     #6c3483;
+  --surface:    #f4f3ee;
+  --code-bg:    #0d1117;
+  --shadow-sm:  0 1px 4px rgba(12,27,58,0.08);
+  --shadow-md:  0 4px 20px rgba(12,27,58,0.10);
+  --shadow-lg:  0 12px 40px rgba(12,27,58,0.14);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 15.5px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR NAVIGATION
+   ═══════════════════════════════════════════════ */
+nav {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 230px;
+  background: var(--navy);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.nav-brand {
+  padding: 1.8rem 1.5rem 1.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav-brand .group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--gold);
+  color: var(--navy);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 100px;
+  margin-bottom: 0.9rem;
+}
+.nav-brand h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+}
+.nav-brand p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.04em;
+}
+
+.nav-section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  padding: 1.1rem 1.5rem 0.4rem;
+}
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 1.5rem;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+nav a:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.04);
+}
+nav a.active {
+  color: var(--gold-light);
+  border-left-color: var(--gold);
+  background: rgba(201,165,53,0.08);
+  font-weight: 500;
+}
+nav a .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.2);
+  min-width: 18px;
+}
+nav a.active .num { color: var(--gold); }
+
+.nav-footer {
+  margin-top: auto;
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.2);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN LAYOUT
+   ═══════════════════════════════════════════════ */
+main { margin-left: 230px; }
+
+/* ═══════════════════════════════════════════════
+   COVER PAGE
+   ═══════════════════════════════════════════════ */
+.cover {
+  min-height: 100vh;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+/* Grid background */
+.cover::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(201,165,53,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,165,53,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events:none;
+}
+/* Gold glow */
+.cover::after {
+  content:'';
+  position:absolute;
+  top:-30%; right:-15%;
+  width:700px; height:700px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(201,165,53,0.12) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.cover-inner {
+  padding: 6rem 5rem 3rem;
+  position: relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  gap: 0;
+}
+
+.cover-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+  opacity:0; animation: slideUp 0.7s 0.1s forwards;
+}
+.eyebrow-line {
+  width: 40px; height: 1px;
+  background: var(--gold);
+}
+.eyebrow-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.cover h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 600;
+  line-height: 1.08;
+  color: #fff;
+  margin-bottom: 0.6rem;
+  opacity:0; animation: slideUp 0.7s 0.25s forwards;
+}
+.cover h1 span {
+  color: var(--gold);
+  font-style: italic;
+}
+.cover .cover-sub {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.5);
+  max-width: 520px;
+  margin-bottom: 3.5rem;
+  font-style: italic;
+  line-height: 1.6;
+  opacity:0; animation: slideUp 0.7s 0.4s forwards;
+}
+
+.cover-meta-row {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 700px;
+  margin-bottom: 2.5rem;
+  opacity:0; animation: slideUp 0.7s 0.55s forwards;
+}
+.cover-meta-cell {
+  background: rgba(255,255,255,0.03);
+  padding: 1rem 1.2rem;
+  backdrop-filter: blur(4px);
+}
+.cover-meta-cell label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 0.3rem;
+}
+.cover-meta-cell p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height:1.3;
+}
+
+.prof-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(201,165,53,0.08);
+  border: 1px solid rgba(201,165,53,0.2);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  max-width: 500px;
+  margin-bottom: 2.5rem;
+  opacity:0; animation: slideUp 0.7s 0.65s forwards;
+}
+.prof-icon {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(201,165,53,0.15);
+  border: 1px solid rgba(201,165,53,0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1.2rem; flex-shrink:0;
+}
+.prof-row p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+.prof-row strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  display: block;
+}
+
+.members-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  opacity:0; animation: slideUp 0.7s 0.75s forwards;
+}
+.member-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  padding: 0.38rem 0.9rem 0.38rem 0.4rem;
+  backdrop-filter: blur(4px);
+}
+.member-pill .av {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  flex-shrink:0;
+}
+.member-pill span.nm {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
+}
+.member-pill span.id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
+}
+
+/* Decorative BST in corner */
+.cover-bst-deco {
+  position: absolute;
+  bottom: 3rem; right: 4rem;
+  opacity: 0.07;
+  animation: fadeIn 2s 1s forwards;
+}
+
+.cover-footer {
+  padding: 1.5rem 5rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative; z-index:1;
+}
+.cover-footer p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.04em;
+}
+
+/* ═══════════════════════════════════════════════
+   TOC
+   ═══════════════════════════════════════════════ */
+.toc-section {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 5rem;
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 2rem;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.4rem;
+  text-decoration: none;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+.toc-item:hover { background: var(--surface); color: var(--navy); }
+.toc-item .toc-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--gold);
+  min-width: 22px;
+  font-weight: 600;
+}
+.toc-item .toc-arrow { margin-left: auto; color: var(--border-mid); font-size: 0.8rem; }
+.toc-item:hover .toc-arrow { color: var(--navy); }
+
+/* ═══════════════════════════════════════════════
+   CONTENT SECTIONS
+   ═══════════════════════════════════════════════ */
+section.content {
+  padding: 5rem 5rem;
+  border-bottom: 1px solid var(--border);
+  max-width: 100%;
+}
+section.content:nth-child(even) { background: var(--white); }
+section.content:nth-child(odd)  { background: var(--cream); }
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.7rem;
+}
+.section-kicker::before {
+  content:'';
+  display:inline-block;
+  width: 20px; height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+h2.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+h2.section-title em { font-style: italic; color: var(--gold); }
+
+h3.sub-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 2.5rem 0 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+p { color: var(--ink-dim); margin-bottom: 1rem; line-height: 1.8; }
+strong { color: var(--ink); font-weight: 600; }
+em { font-style: italic; }
+ul, ol { padding-left: 1.5rem; color: var(--ink-dim); margin-bottom: 1rem; }
+li { margin-bottom: 0.35rem; }
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82em;
+  background: rgba(12,27,58,0.06);
+  color: var(--navy-mid);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  border: 1px solid rgba(12,27,58,0.1);
+}
+
+/* ═══════════════════════════════════════════════
+   CALLOUT
+   ═══════════════════════════════════════════════ */
+.callout {
+  border-radius: 8px;
+  padding: 1.1rem 1.4rem;
+  margin: 1.5rem 0;
+  border-left: 3px solid;
+  display: flex;
+  gap: 0.8rem;
+}
+.callout-icon { font-size: 1.1rem; flex-shrink:0; margin-top:0.05rem; }
+.callout p { margin:0; font-size: 0.9rem; line-height: 1.65; }
+.callout.gold   { background: #fffbea; border-color: var(--gold); }
+.callout.navy   { background: #eef2fa; border-color: var(--navy); }
+.callout.red    { background: #fdf0ee; border-color: var(--red); }
+.callout.green  { background: #edfaf2; border-color: var(--green); }
+.callout.violet { background: #f3eeff; border-color: var(--violet); }
+.callout strong { color: inherit; }
+.callout.gold strong   { color: #8a6a00; }
+.callout.navy strong   { color: var(--navy); }
+.callout.red strong    { color: var(--red); }
+.callout.green strong  { color: var(--green); }
+.callout.violet strong { color: var(--violet); }
+
+/* ═══════════════════════════════════════════════
+   PROPERTY CARDS
+   ═══════════════════════════════════════════════ */
+.prop-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1rem;
+  margin: 1.8rem 0;
+}
+.prop-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.prop-card:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.prop-card .ico { font-size: 1.5rem; margin-bottom: 0.6rem; display:block; }
+.prop-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.3rem;
+}
+.prop-card p { font-size: 0.82rem; margin:0; }
+
+/* ═══════════════════════════════════════════════
+   BST TREE DIAGRAM
+   ═══════════════════════════════════════════════ */
+.tree-figure {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.tree-figure figcaption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+.tree-svg { width:100%; max-width:580px; height:auto; display:inline-block; }
+
+/* ═══════════════════════════════════════════════
+   TRAVERSAL OVERVIEW CARDS
+   ═══════════════════════════════════════════════ */
+.trav-overview {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1.2rem;
+  margin: 2rem 0;
+}
+.tov-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.tov-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.tov-header {
+  padding: 1rem 1.3rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tov-card.pre  .tov-header { background: #fdf0ee; color: var(--red); border-bottom:1px solid #f5cec8; }
+.tov-card.ino  .tov-header { background: #edfaf2; color: var(--green); border-bottom:1px solid #bde9cd; }
+.tov-card.post .tov-header { background: #f3eeff; color: var(--violet); border-bottom:1px solid #d6c4f5; }
+.tov-body { background: var(--white); padding: 1.2rem 1.3rem; }
+.tov-body h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.4rem;
+}
+.tov-body p { font-size: 0.82rem; margin-bottom: 0.8rem; }
+.tov-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+}
+.pre  .tov-badge { background: #fdf0ee; color: var(--red); }
+.ino  .tov-badge { background: #edfaf2; color: var(--green); }
+.post .tov-badge { background: #f3eeff; color: var(--violet); }
+
+/* ═══════════════════════════════════════════════
+   ALGORITHM STEPS
+   ═══════════════════════════════════════════════ */
+.algo-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+}
+.algo-head {
+  padding: 0.85rem 1.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.algo-head .dot { width:8px; height:8px; border-radius:50%; }
+.algo-card.pre  .algo-head { background:#fdf0ee; color:var(--red);    }
+.algo-card.ino  .algo-head { background:#edfaf2; color:var(--green);  }
+.algo-card.post .algo-head { background:#f3eeff; color:var(--violet); }
+.algo-card.pre  .algo-head .dot { background:var(--red);    }
+.algo-card.ino  .algo-head .dot { background:var(--green);  }
+.algo-card.post .algo-head .dot { background:var(--violet); }
+
+.algo-steps {
+  padding: 1.2rem 1.4rem;
+  list-style: none;
+  counter-reset: s;
+}
+.algo-steps li {
+  counter-increment: s;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--surface);
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+}
+.algo-steps li:last-child { border-bottom: none; }
+.algo-steps li::before {
+  content: counter(s);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.algo-card.pre  .algo-steps li::before { background:#fdf0ee; color:var(--red);    }
+.algo-card.ino  .algo-steps li::before { background:#edfaf2; color:var(--green);  }
+.algo-card.post .algo-steps li::before { background:#f3eeff; color:var(--violet); }
+
+/* ═══════════════════════════════════════════════
+   TRACE TABLE
+   ═══════════════════════════════════════════════ */
+.trace-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.trace-head {
+  padding: 0.8rem 1.4rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.trace-steps { padding: 0.5rem 0; }
+.trace-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 1.4rem;
+  border-bottom: 1px solid var(--surface);
+  font-size: 0.85rem;
+}
+.trace-row:last-child { border-bottom: none; }
+.trace-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  min-width: 50px;
+}
+.trace-node-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 5px;
+  min-width: 50px;
+  text-align: center;
+}
+.pre-color  { background:#fdf0ee; color:var(--red);    }
+.ino-color  { background:#edfaf2; color:var(--green);  }
+.post-color { background:#f3eeff; color:var(--violet); }
+.trace-desc { color: var(--ink-dim); font-size: 0.83rem; }
+.trace-arrow { color: var(--border-mid); font-size: 0.75rem; }
+.trace-output {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 1rem 1.4rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.trace-output-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-right: 0.3rem;
+}
+
+/* ═══════════════════════════════════════════════
+   ★ INTERACTIVE TRAVERSAL VISUALIZER ★
+   ═══════════════════════════════════════════════ */
+.visualizer {
+  background: var(--navy);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 2rem 0;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.viz-toolbar {
+  padding: 1rem 1.5rem;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.viz-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-right: 0.3rem;
+}
+.viz-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 7px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  letter-spacing: 0.02em;
+}
+.viz-btn.pre-btn   { border-color: rgba(192,57,43,0.4); color: #e57373; }
+.viz-btn.ino-btn   { border-color: rgba(39,174,96,0.4); color: #66bb6a; }
+.viz-btn.post-btn  { border-color: rgba(108,52,131,0.4);color: #ab8cdb; }
+.viz-btn.reset-btn { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+.viz-btn:hover { transform: translateY(-1px); }
+.viz-btn.pre-btn:hover   { background: rgba(192,57,43,0.12); border-color: rgba(192,57,43,0.6); }
+.viz-btn.ino-btn:hover   { background: rgba(39,174,96,0.10); border-color: rgba(39,174,96,0.6); }
+.viz-btn.post-btn:hover  { background: rgba(108,52,131,0.10);border-color: rgba(108,52,131,0.6);}
+.viz-btn.reset-btn:hover { background: rgba(255,255,255,0.05); }
+.viz-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.viz-speed {
+  margin-left: auto;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.viz-speed select {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.viz-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+}
+.viz-tree-area {
+  padding: 2rem;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.viz-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 1rem;
+  height: 20px;
+}
+.viz-panel {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.viz-panel-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+.viz-output-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-height: 180px;
+}
+.viz-output-list li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  animation: popIn 0.3s ease;
+}
+.viz-output-list li .step-idx {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.25);
+  min-width: 18px;
+}
+@keyframes popIn {
+  from { opacity:0; transform: scale(0.9) translateX(-6px); }
+  to   { opacity:1; transform: scale(1) translateX(0); }
+}
+.viz-status {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  text-align: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ═══════════════════════════════════════════════
+   TRAVERSAL-NUMBERED TREE DIAGRAMS
+   ═══════════════════════════════════════════════ */
+.three-trees {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.tree-mini-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.tree-mini-card .tmc-head {
+  padding: 0.65rem 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.tree-mini-card.pre  .tmc-head { background:#fdf0ee; color:var(--red);    }
+.tree-mini-card.ino  .tmc-head { background:#edfaf2; color:var(--green);  }
+.tree-mini-card.post .tmc-head { background:#f3eeff; color:var(--violet); }
+.tree-mini-card svg { padding: 1rem; width:100%; }
+
+/* ═══════════════════════════════════════════════
+   CODE BLOCK
+   ═══════════════════════════════════════════════ */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #21262d;
+}
+.code-topbar {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  gap: 0.9rem;
+}
+.code-dots { display:flex; gap:6px; }
+.code-dots span { width:12px; height:12px; border-radius:50%; }
+.code-dots span:nth-child(1) { background:#ff5f57; }
+.code-dots span:nth-child(2) { background:#ffbd2e; }
+.code-dots span:nth-child(3) { background:#28c840; }
+.code-filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #58a6ff;
+  font-weight: 500;
+}
+.code-lang-badge {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--gold);
+  background: rgba(201,165,53,0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.code-body {
+  display: flex;
+  overflow-x: auto;
+}
+.line-nums {
+  padding: 1.3rem 0.8rem 1.3rem 1rem;
+  text-align: right;
+  user-select: none;
+  border-right: 1px solid #21262d;
+  background: #0d1117;
+  min-width: 40px;
+}
+.line-nums span {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.8;
+  color: #3d4451;
+}
+pre {
+  margin: 0;
+  padding: 1.3rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: #c9d1d9;
+  overflow-x: auto;
+  flex: 1;
+}
+.kw  { color:#ff7b72; }
+.fn  { color:#d2a8ff; }
+.st  { color:#a5d6ff; }
+.cm  { color:#6e7681; font-style:italic; }
+.nm  { color:#79c0ff; }
+.cl  { color:#ffa657; }
+.slf { color:#e3b341; }
+
+/* ═══════════════════════════════════════════════
+   OUTPUT TERMINAL
+   ═══════════════════════════════════════════════ */
+.terminal {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.2rem 0;
+}
+.terminal-bar {
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  padding: 0.6rem 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #58a6ff;
+  display:flex; align-items:center; gap:0.5rem;
+}
+.terminal-bar::before {
+  content:'$';
+  color:#3d4451;
+}
+.terminal-body { padding: 1rem 1.3rem; }
+.terminal-body p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #c9d1d9;
+  margin: 0;
+  line-height: 2;
+}
+.t-label { color: #6e7681; }
+.t-pre   { color: #e57373; }
+.t-ino   { color: #66bb6a; }
+.t-post  { color: #ab8cdb; }
+
+/* ═══════════════════════════════════════════════
+   COMPLEXITY TABLE
+   ═══════════════════════════════════════════════ */
+.table-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-sm);
+}
+table { width:100%; border-collapse:collapse; }
+thead th {
+  background: var(--navy);
+  color: rgba(255,255,255,0.7);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.2rem;
+  text-align: left;
+}
+tbody td {
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover td { background: var(--surface); }
+.tc-trav { font-weight: 600; }
+.tc-trav.pre  { color: var(--red);    }
+.tc-trav.ino  { color: var(--green);  }
+.tc-trav.post { color: var(--violet); }
+.tc-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.tc-good { color: var(--green); }
+
+/* ═══════════════════════════════════════════════
+   APPLICATION CARDS
+   ═══════════════════════════════════════════════ */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.app-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: all 0.2s;
+}
+.app-card:hover { border-color: var(--gold); box-shadow: var(--shadow-md); transform:translateY(-1px); }
+.app-icon-wrap {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1.2rem;
+  flex-shrink:0;
+  border: 1px solid var(--border);
+}
+.app-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.3rem;
+}
+.app-card p { font-size: 0.82rem; margin:0; }
+.tag-pill {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+.tag-pill.pre  { background:#fdf0ee; color:var(--red);    }
+.tag-pill.ino  { background:#edfaf2; color:var(--green);  }
+.tag-pill.post { background:#f3eeff; color:var(--violet); }
+
+/* ═══════════════════════════════════════════════
+   CONCLUSION
+   ═══════════════════════════════════════════════ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.3rem 1rem;
+  text-align:center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-card .stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  display:block; margin-bottom:0.3rem;
+}
+.stat-card p { font-size: 0.78rem; margin:0; }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════ */
+footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  padding: 2rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+}
+footer strong { color: var(--gold); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════ */
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:0.07; }
+}
+.reveal {
+  opacity:0; transform:translateY(16px);
+  transition: opacity 0.55s, transform 0.55s;
+}
+.reveal.vis { opacity:1; transform:translateY(0); }
+.reveal-d1 { transition-delay: 0.05s; }
+.reveal-d2 { transition-delay: 0.12s; }
+.reveal-d3 { transition-delay: 0.19s; }
+
+@media (max-width:900px) {
+  nav { display:none; }
+  main { margin-left:0; }
+  section.content, .cover-inner, .cover-footer, .toc-section { padding: 3rem 1.5rem; }
+  .trav-overview, .prop-grid, .app-grid, .stats-row, .three-trees, .toc-grid { grid-template-columns:1fr; }
+  .viz-body { grid-template-columns:1fr; }
+  .cover-meta-row { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ SIDEBAR ══ -->
+<nav>
+  <div class="nav-brand">
+    <div class="group-badge">⬡ Group 5</div>
+    <h2>BST Traversal<br/>Algorithms</h2>
+    <p>IDS Course Project</p>
+  </div>
+
+  <div class="nav-section-label">Contents</div>
+  <a href="#cover"       class="active"><span class="num">00</span>Cover Page</a>
+  <a href="#toc">        <span class="num">—</span>Table of Contents</a>
+  <a href="#intro">      <span class="num">01</span>Introduction</a>
+  <a href="#bst">        <span class="num">02</span>Binary Search Tree</a>
+  <a href="#logic">      <span class="num">03</span>Traversal Logic</a>
+  <a href="#visualizer"> <span class="num">★</span>Live Visualizer</a>
+  <a href="#preorder">   <span class="num">04</span>Pre-order</a>
+  <a href="#inorder">    <span class="num">05</span>In-order</a>
+  <a href="#postorder">  <span class="num">06</span>Post-order</a>
+  <a href="#code">       <span class="num">07</span>Code</a>
+  <a href="#complexity"> <span class="num">08</span>Complexity</a>
+  <a href="#applications"><span class="num">09</span>Applications</a>
+  <a href="#conclusion"> <span class="num">10</span>Conclusion</a>
+
+  <div class="nav-footer">
+    Submitted to<br/>
+    <strong style="color:var(--gold);font-size:0.78rem;">Prof. Chinmaya Kumar Swain</strong><br/>
+    Introduction to Data Structures
+  </div>
+</nav>
+
+<main>
+<!-- ═══════════════════════════════════════════════════════════
+     COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="cover" id="cover">
+  <!-- Decorative tree -->
+  <svg class="cover-bst-deco" width="420" height="380" viewBox="0 0 420 380">
+    <line x1="210" y1="50"  x2="110" y2="145" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="210" y1="50"  x2="310" y2="145" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="110" y1="145" x2="62"  y2="240" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="110" y1="145" x2="158" y2="240" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="310" y1="145" x2="262" y2="240" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="310" y1="145" x2="358" y2="240" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="62"  y1="240" x2="38"  y2="330" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="62"  y1="240" x2="86"  y2="330" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="158" y1="240" x2="134" y2="330" stroke="#c9a535" stroke-width="1.5"/>
+    <line x1="158" y1="240" x2="182" y2="330" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="210" cy="50"  r="24" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="110" cy="145" r="22" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="310" cy="145" r="22" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="62"  cy="240" r="20" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="158" cy="240" r="20" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="262" cy="240" r="20" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="358" cy="240" r="20" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="38"  cy="330" r="14" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="86"  cy="330" r="14" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="134" cy="330" r="14" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+    <circle cx="182" cy="330" r="14" fill="none" stroke="#c9a535" stroke-width="1.5"/>
+  </svg>
+
+  <div class="cover-inner">
+    <div class="cover-eyebrow">
+      <span class="eyebrow-line"></span>
+      <span class="eyebrow-text">Introduction to Data Structures &nbsp;·&nbsp; Course Project</span>
+    </div>
+
+    <h1>Binary Search Tree<br/><span>Traversal Algorithms</span></h1>
+    <p class="cover-sub">
+      A comprehensive study of In-order, Pre-order, and Post-order depth-first
+      traversal strategies — their recursive logic, step-by-step execution,
+      full implementation, and real-world applications.
+    </p>
+
+    <div class="cover-meta-row">
+      <div class="cover-meta-cell">
+        <label>Group</label>
+        <p>Group — 5</p>
+      </div>
+      <div class="cover-meta-cell">
+        <label>Subject</label>
+        <p>Intro to Data Structures</p>
+      </div>
+      <div class="cover-meta-cell">
+        <label>Language</label>
+        <p>Python 3</p>
+      </div>
+      <div class="cover-meta-cell">
+        <label>Topic</label>
+        <p>BST Traversals</p>
+      </div>
+    </div>
+
+    <div class="prof-row">
+      <div class="prof-icon">🎓</div>
+      <div>
+        <p>Submitted to</p>
+        <strong>Prof. Chinmaya Kumar Swain</strong>
+      </div>
+    </div>
+
+    <div class="members-row">
+      <div class="member-pill">
+        <div class="av" style="background:rgba(201,165,53,0.18);color:#e8c95a;">AK</div>
+        <span class="nm">Anurag Kumar</span>
+        <span class="id">IPM25024</span>
+      </div>
+      <div class="member-pill">
+        <div class="av" style="background:rgba(39,174,96,0.18);color:#66bb6a;">AM</div>
+        <span class="nm">Amaan</span>
+        <span class="id">IPM25083</span>
+      </div>
+      <div class="member-pill">
+        <div class="av" style="background:rgba(108,52,131,0.2);color:#ab8cdb;">VR</div>
+        <span class="nm">Veer</span>
+        <span class="id">IPM25141</span>
+      </div>
+      <div class="member-pill">
+        <div class="av" style="background:rgba(192,57,43,0.18);color:#e57373;">AA</div>
+        <span class="nm">Aakarsh</span>
+        <span class="id">IPM25002</span>
+      </div>
+      <div class="member-pill">
+        <div class="av" style="background:rgba(41,128,185,0.18);color:#64b5f6;">IR</div>
+        <span class="nm">Irfan</span>
+        <span class="id">IPM25061</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <p>Introduction to Data Structures · Academic Year 2024–25</p>
+    <p>Group 5 · Binary Search Tree Traversals</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TABLE OF CONTENTS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="toc-section" id="toc">
+  <div class="section-kicker">Navigation</div>
+  <h2 class="section-title">Table of <em>Contents</em></h2>
+
+  <div class="toc-grid reveal">
+    <a class="toc-item" href="#intro">    <span class="toc-num">01</span> Introduction <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#bst">      <span class="toc-num">02</span> Binary Search Tree — Background <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#logic">    <span class="toc-num">03</span> Logic of Traversal Operations <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#visualizer"><span class="toc-num">★</span> Interactive Traversal Visualizer <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#preorder"> <span class="toc-num">04</span> Pre-order Traversal (Root→L→R) <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#inorder">  <span class="toc-num">05</span> In-order Traversal (L→Root→R) <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#postorder"><span class="toc-num">06</span> Post-order Traversal (L→R→Root) <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#code">     <span class="toc-num">07</span> Full Code Implementation <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#complexity"><span class="toc-num">08</span> Time & Space Complexity <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#applications"><span class="toc-num">09</span> Real-world Applications <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#conclusion"><span class="toc-num">10</span> Conclusion <span class="toc-arrow">→</span></a>
+    <a class="toc-item" href="#code">     <span class="toc-num">—</span> References <span class="toc-arrow">→</span></a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 01 — INTRODUCTION
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="intro">
+  <div class="section-kicker">Section 01</div>
+  <h2 class="section-title">Introduction</h2>
+
+  <p>Data structures are foundational to computer science — they determine how information is stored, organised, and accessed. Among hierarchical structures, the <strong>Binary Search Tree (BST)</strong> holds a special place: it combines the structural elegance of a binary tree with the ordering discipline of binary search, enabling efficient lookups, insertions, and deletions in <em>O(log n)</em> time for balanced trees.</p>
+
+  <p>A key operation on any tree is <strong>traversal</strong> — visiting each node systematically, exactly once. Unlike linear data structures where traversal is straightforward, trees branch in multiple directions, necessitating deliberate algorithms that define the order of visits. The choice of traversal order directly impacts what can be achieved: sorting, copying, evaluating, or deleting a tree.</p>
+
+  <p>This project implements and analyses the three classical <strong>depth-first traversal strategies</strong> on a BST:</p>
+  <ul>
+    <li><strong>Pre-order</strong> (Root → Left → Right) — visits the current node before its children</li>
+    <li><strong>In-order</strong> (Left → Root → Right) — visits the current node between its children</li>
+    <li><strong>Post-order</strong> (Left → Right → Root) — visits the current node after its children</li>
+  </ul>
+
+  <div class="callout navy reveal">
+    <div class="callout-icon">📌</div>
+    <p><strong>Project Objective:</strong> Implement In-order, Pre-order, and Post-order traversals of a Binary Search Tree — demonstrating a clear understanding of recursive logic, tree node structure, and the practical significance of traversal ordering in real-world computing.</p>
+  </div>
+
+  <p>The implementation is written in <strong>Python 3</strong> using an object-oriented approach. All algorithms are recursive and original. The report is structured as follows: we first establish the theoretical background of BSTs, then explain the logic and execution of each traversal with step-by-step traces, present the complete code, analyse complexity, and identify applications.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 02 — BST BACKGROUND
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="bst">
+  <div class="section-kicker">Section 02</div>
+  <h2 class="section-title">Binary Search Tree — <em>Background</em></h2>
+
+  <h3 class="sub-title">What is a Binary Tree?</h3>
+  <p>A <strong>binary tree</strong> is a hierarchical, non-linear data structure in which each node has at most two children — a <em>left child</em> and a <em>right child</em>. Unlike arrays or linked lists, binary trees enable branching paths through data, making them well-suited for hierarchical relationships and recursive algorithms.</p>
+
+  <h3 class="sub-title">The BST Ordering Property</h3>
+  <p>A <strong>Binary Search Tree</strong> is a binary tree with a strict ordering constraint imposed on every node:</p>
+
+  <div class="callout gold reveal">
+    <div class="callout-icon">⚖️</div>
+    <p><strong>BST Ordering Property:</strong> For every node <em>N</em> — all values in <em>N</em>'s left subtree are strictly <em>less than</em> N.data, and all values in <em>N</em>'s right subtree are strictly <em>greater than</em> N.data. This property must hold recursively for every node in the tree.</p>
+  </div>
+
+  <div class="prop-grid reveal">
+    <div class="prop-card"><span class="ico">🌱</span><h4>Root Node</h4><p>The topmost node with no parent. Every traversal originates here.</p></div>
+    <div class="prop-card"><span class="ico">🍃</span><h4>Leaf Node</h4><p>A node with no children (both left and right are None). The recursion base case.</p></div>
+    <div class="prop-card"><span class="ico">📐</span><h4>Height</h4><p>Length of the longest root-to-leaf path. Governs worst-case traversal space (call stack depth).</p></div>
+    <div class="prop-card"><span class="ico">◀</span><h4>Left Subtree</h4><p>All nodes with values strictly less than the current node's value.</p></div>
+    <div class="prop-card"><span class="ico">▶</span><h4>Right Subtree</h4><p>All nodes with values strictly greater than the current node's value.</p></div>
+    <div class="prop-card"><span class="ico">🔁</span><h4>Recursive Structure</h4><p>Every subtree of a BST is itself a valid BST — the fundamental property enabling clean recursion.</p></div>
+  </div>
+
+  <h3 class="sub-title">Sample BST — Used Throughout This Report</h3>
+  <p>We construct our sample BST by inserting values in this sequence: <code>50, 30, 70, 20, 40, 60, 80</code>. The root is <strong>50</strong>. Values less than 50 go left; values greater go right. This yields the following structure:</p>
+
+  <figure class="tree-figure reveal">
+    <figcaption>Figure 1 — Sample Binary Search Tree (7 Nodes)</figcaption>
+    <svg class="tree-svg" viewBox="0 0 600 310" xmlns="http://www.w3.org/2000/svg">
+      <!-- Edges -->
+      <line x1="300" y1="58"  x2="175" y2="148" stroke="#cbd5e0" stroke-width="2"/>
+      <line x1="300" y1="58"  x2="425" y2="148" stroke="#cbd5e0" stroke-width="2"/>
+      <line x1="175" y1="148" x2="112" y2="238" stroke="#cbd5e0" stroke-width="2"/>
+      <line x1="175" y1="148" x2="238" y2="238" stroke="#cbd5e0" stroke-width="2"/>
+      <line x1="425" y1="148" x2="362" y2="238" stroke="#cbd5e0" stroke-width="2"/>
+      <line x1="425" y1="148" x2="488" y2="238" stroke="#cbd5e0" stroke-width="2"/>
+      <!-- Root -->
+      <circle cx="300" cy="58"  r="30" fill="#0c1b3a" stroke="#c9a535" stroke-width="2.5"/>
+      <text x="300" y="64" text-anchor="middle" fill="#c9a535" font-family="JetBrains Mono" font-size="15" font-weight="700">50</text>
+      <!-- Level 2 -->
+      <circle cx="175" cy="148" r="27" fill="#152952" stroke="#718096" stroke-width="1.5"/>
+      <text x="175" y="154" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono" font-size="14" font-weight="600">30</text>
+      <circle cx="425" cy="148" r="27" fill="#152952" stroke="#718096" stroke-width="1.5"/>
+      <text x="425" y="154" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono" font-size="14" font-weight="600">70</text>
+      <!-- Leaves -->
+      <circle cx="112" cy="238" r="24" fill="#1e2a3a" stroke="#4a5568" stroke-width="1.5"/>
+      <text x="112" y="244" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13">20</text>
+      <circle cx="238" cy="238" r="24" fill="#1e2a3a" stroke="#4a5568" stroke-width="1.5"/>
+      <text x="238" y="244" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13">40</text>
+      <circle cx="362" cy="238" r="24" fill="#1e2a3a" stroke="#4a5568" stroke-width="1.5"/>
+      <text x="362" y="244" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13">60</text>
+      <circle cx="488" cy="238" r="24" fill="#1e2a3a" stroke="#4a5568" stroke-width="1.5"/>
+      <text x="488" y="244" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13">80</text>
+      <!-- Labels -->
+      <text x="300" y="22" text-anchor="middle" fill="#718096" font-family="DM Sans" font-size="10" letter-spacing="2">ROOT</text>
+      <text x="175" y="118" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">LEFT</text>
+      <text x="425" y="118" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">RIGHT</text>
+      <text x="112" y="280" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">LEAF</text>
+      <text x="238" y="280" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">LEAF</text>
+      <text x="362" y="280" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">LEAF</text>
+      <text x="488" y="280" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9">LEAF</text>
+    </svg>
+  </figure>
+
+  <h3 class="sub-title">Node Structure in Code</h3>
+  <p>Each node in the BST is represented as an object with three fields:</p>
+  <ul>
+    <li><code>data</code> — the integer value stored at this node</li>
+    <li><code>left</code> — reference to the left child node (<code>None</code> if absent)</li>
+    <li><code>right</code> — reference to the right child node (<code>None</code> if absent)</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 03 — LOGIC
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="logic">
+  <div class="section-kicker">Section 03</div>
+  <h2 class="section-title">Logic of <em>Traversal Operations</em></h2>
+
+  <p>All three traversal algorithms are <strong>depth-first</strong> — they explore one branch as deep as possible before backtracking. They differ only in <em>when</em> the current node (Root) is processed relative to its left (L) and right (R) subtrees. Each algorithm is naturally expressed using recursion, leveraging the recursive structure of the BST itself.</p>
+
+  <div class="trav-overview reveal">
+    <div class="tov-card pre">
+      <div class="tov-header">Pre-order Traversal</div>
+      <div class="tov-body">
+        <h4>Root → Left → Right</h4>
+        <p>The current node is visited <em>before</em> (pre) either subtree. Process the node first, then recurse left, then recurse right.</p>
+        <span class="tov-badge">Root → L → R</span>
+      </div>
+    </div>
+    <div class="tov-card ino">
+      <div class="tov-header">In-order Traversal</div>
+      <div class="tov-body">
+        <h4>Left → Root → Right</h4>
+        <p>The current node is visited <em>between</em> (in) the two subtrees. Recurse left, process the node, recurse right. Yields sorted output on a BST.</p>
+        <span class="tov-badge">L → Root → R</span>
+      </div>
+    </div>
+    <div class="tov-card post">
+      <div class="tov-header">Post-order Traversal</div>
+      <div class="tov-body">
+        <h4>Left → Right → Root</h4>
+        <p>The current node is visited <em>after</em> (post) both subtrees are fully processed. Recurse left, recurse right, then process the node.</p>
+        <span class="tov-badge">L → R → Root</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green reveal">
+    <div class="callout-icon">💡</div>
+    <p><strong>Critical Insight:</strong> In-order traversal of any BST always yields all elements in <em>ascending sorted order</em>. This is the defining property of the BST ordering invariant manifested through traversal — effectively a free O(n) sort of any BST's elements.</p>
+  </div>
+
+  <h3 class="sub-title">Traversal Order on Sample BST — Visual Comparison</h3>
+  <p>The numbered circles show the <em>visit order</em> for each traversal on our sample BST. Compare how the order changes while the tree structure remains identical:</p>
+
+  <div class="three-trees reveal">
+    <!-- PRE-ORDER numbered tree -->
+    <div class="tree-mini-card pre">
+      <div class="tmc-head">Pre-order: 50→30→20→40→70→60→80</div>
+      <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="110" y1="38" x2="65" y2="90" stroke="#e0b8b5" stroke-width="1.5"/>
+        <line x1="110" y1="38" x2="155" y2="90" stroke="#e0b8b5" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="42" y2="148" stroke="#e0b8b5" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="88" y2="148" stroke="#e0b8b5" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="132" y2="148" stroke="#e0b8b5" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="178" y2="148" stroke="#e0b8b5" stroke-width="1.5"/>
+        <circle cx="110" cy="38"  r="20" fill="#c0392b" stroke="none"/>
+        <circle cx="65"  cy="90"  r="18" fill="#e07060" stroke="none"/>
+        <circle cx="155" cy="90"  r="18" fill="#bf7070" stroke="none"/>
+        <circle cx="42"  cy="148" r="16" fill="#d4908a" stroke="none"/>
+        <circle cx="88"  cy="148" r="16" fill="#c8807a" stroke="none"/>
+        <circle cx="132" cy="148" r="16" fill="#b87070" stroke="none"/>
+        <circle cx="178" cy="148" r="16" fill="#a86060" stroke="none"/>
+        <text x="110" y="43" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">①50</text>
+        <text x="65"  y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">②30</text>
+        <text x="155" y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">⑤70</text>
+        <text x="42"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">③20</text>
+        <text x="88"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">④40</text>
+        <text x="132" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">⑥60</text>
+        <text x="178" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">⑦80</text>
+      </svg>
+    </div>
+    <!-- IN-ORDER numbered tree -->
+    <div class="tree-mini-card ino">
+      <div class="tmc-head">In-order: 20→30→40→50→60→70→80</div>
+      <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="110" y1="38" x2="65" y2="90" stroke="#b3dfc5" stroke-width="1.5"/>
+        <line x1="110" y1="38" x2="155" y2="90" stroke="#b3dfc5" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="42" y2="148" stroke="#b3dfc5" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="88" y2="148" stroke="#b3dfc5" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="132" y2="148" stroke="#b3dfc5" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="178" y2="148" stroke="#b3dfc5" stroke-width="1.5"/>
+        <circle cx="110" cy="38"  r="20" fill="#1e8449" stroke="none"/>
+        <circle cx="65"  cy="90"  r="18" fill="#27ae60" stroke="none"/>
+        <circle cx="155" cy="90"  r="18" fill="#1a7a42" stroke="none"/>
+        <circle cx="42"  cy="148" r="16" fill="#52be80" stroke="none"/>
+        <circle cx="88"  cy="148" r="16" fill="#45b36e" stroke="none"/>
+        <circle cx="132" cy="148" r="16" fill="#239954" stroke="none"/>
+        <circle cx="178" cy="148" r="16" fill="#1a7a42" stroke="none"/>
+        <text x="110" y="43" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">④50</text>
+        <text x="65"  y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">②30</text>
+        <text x="155" y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">⑥70</text>
+        <text x="42"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">①20</text>
+        <text x="88"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">③40</text>
+        <text x="132" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">⑤60</text>
+        <text x="178" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">⑦80</text>
+      </svg>
+    </div>
+    <!-- POST-ORDER numbered tree -->
+    <div class="tree-mini-card post">
+      <div class="tmc-head">Post-order: 20→40→30→60→80→70→50</div>
+      <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="110" y1="38" x2="65" y2="90" stroke="#c9b8e8" stroke-width="1.5"/>
+        <line x1="110" y1="38" x2="155" y2="90" stroke="#c9b8e8" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="42" y2="148" stroke="#c9b8e8" stroke-width="1.5"/>
+        <line x1="65" y1="90" x2="88" y2="148" stroke="#c9b8e8" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="132" y2="148" stroke="#c9b8e8" stroke-width="1.5"/>
+        <line x1="155" y1="90" x2="178" y2="148" stroke="#c9b8e8" stroke-width="1.5"/>
+        <circle cx="110" cy="38"  r="20" fill="#6c3483" stroke="none"/>
+        <circle cx="65"  cy="90"  r="18" fill="#8e44ad" stroke="none"/>
+        <circle cx="155" cy="90"  r="18" fill="#7d3c98" stroke="none"/>
+        <circle cx="42"  cy="148" r="16" fill="#a569bd" stroke="none"/>
+        <circle cx="88"  cy="148" r="16" fill="#9b59b6" stroke="none"/>
+        <circle cx="132" cy="148" r="16" fill="#8c51a8" stroke="none"/>
+        <circle cx="178" cy="148" r="16" fill="#7d3c98" stroke="none"/>
+        <text x="110" y="43" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">⑦50</text>
+        <text x="65"  y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">③30</text>
+        <text x="155" y="95" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700">⑥70</text>
+        <text x="42"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">①20</text>
+        <text x="88"  y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">②40</text>
+        <text x="132" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">④60</text>
+        <text x="178" y="153" text-anchor="middle" fill="white" font-family="JetBrains Mono" font-size="9">⑤80</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     INTERACTIVE VISUALIZER
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="visualizer">
+  <div class="section-kicker">Interactive</div>
+  <h2 class="section-title">Live Traversal <em>Visualizer</em></h2>
+  <p>Select a traversal below and watch the BST nodes light up in real time, step by step. The output sequence builds on the right as each node is visited.</p>
+
+  <div class="visualizer reveal">
+    <div class="viz-toolbar">
+      <span class="viz-label">Run:</span>
+      <button class="viz-btn pre-btn"  onclick="runViz('pre')" >▶ Pre-order</button>
+      <button class="viz-btn ino-btn"  onclick="runViz('ino')" >▶ In-order</button>
+      <button class="viz-btn post-btn" onclick="runViz('post')">▶ Post-order</button>
+      <button class="viz-btn reset-btn" onclick="resetViz()">↺ Reset</button>
+      <div class="viz-speed">
+        Speed:
+        <select id="viz-speed">
+          <option value="900">Slow</option>
+          <option value="550" selected>Normal</option>
+          <option value="250">Fast</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="viz-body">
+      <div class="viz-tree-area">
+        <div class="viz-step-label" id="viz-step-label">Select a traversal to begin</div>
+        <svg id="viz-svg" width="100%" viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg">
+          <!-- Edges -->
+          <line x1="210" y1="52" x2="122" y2="130" stroke="#2d3748" stroke-width="2"/>
+          <line x1="210" y1="52" x2="298" y2="130" stroke="#2d3748" stroke-width="2"/>
+          <line x1="122" y1="130" x2="78"  y2="210" stroke="#2d3748" stroke-width="2"/>
+          <line x1="122" y1="130" x2="166" y2="210" stroke="#2d3748" stroke-width="2"/>
+          <line x1="298" y1="130" x2="254" y2="210" stroke="#2d3748" stroke-width="2"/>
+          <line x1="298" y1="130" x2="342" y2="210" stroke="#2d3748" stroke-width="2"/>
+          <!-- Nodes -->
+          <circle id="vn50" cx="210" cy="52"  r="26" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="210" y="58"  text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13" font-weight="600" style="pointer-events:none">50</text>
+          <circle id="vn30" cx="122" cy="130" r="24" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="122" y="136" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13" font-weight="600" style="pointer-events:none">30</text>
+          <circle id="vn70" cx="298" cy="130" r="24" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="298" y="136" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="13" font-weight="600" style="pointer-events:none">70</text>
+          <circle id="vn20" cx="78"  cy="210" r="22" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="78"  y="216" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="12" style="pointer-events:none">20</text>
+          <circle id="vn40" cx="166" cy="210" r="22" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="166" y="216" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="12" style="pointer-events:none">40</text>
+          <circle id="vn60" cx="254" cy="210" r="22" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="254" y="216" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="12" style="pointer-events:none">60</text>
+          <circle id="vn80" cx="342" cy="210" r="22" fill="#1e3a6e" stroke="#2d4a8a" stroke-width="2" style="transition:fill 0.3s,stroke 0.3s"/>
+          <text x="342" y="216" text-anchor="middle" fill="#a0aec0" font-family="JetBrains Mono" font-size="12" style="pointer-events:none">80</text>
+          <!-- Root label -->
+          <text x="210" y="18" text-anchor="middle" fill="#4a5568" font-family="DM Sans" font-size="9" letter-spacing="2">ROOT</text>
+        </svg>
+      </div>
+      <div class="viz-panel">
+        <div class="viz-panel-title">Visited Nodes</div>
+        <ul class="viz-output-list" id="viz-output"></ul>
+        <div class="viz-status" id="viz-status">Press a traversal button to start</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 04 — PRE-ORDER
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="preorder">
+  <div class="section-kicker">Section 04</div>
+  <h2 class="section-title">Pre-order Traversal — <em>Root → L → R</em></h2>
+
+  <p>In <strong>Pre-order traversal</strong>, the current node is visited <em>before</em> either subtree is explored. This "visit before descend" approach means the root is always the first node visited, and children are always visited after their parent.</p>
+
+  <div class="algo-card pre reveal">
+    <div class="algo-head"><span class="dot"></span>Pre-order Algorithm — Root → Left → Right</div>
+    <ol class="algo-steps">
+      <li><strong>Base case:</strong> If the current node is <code>None</code>, return immediately. This is the stopping condition for recursion.</li>
+      <li><strong>Visit Root:</strong> Process (print/store) the <strong>current node's data</strong>.</li>
+      <li><strong>Recurse Left:</strong> Recursively apply Pre-order to the <strong>left subtree</strong>.</li>
+      <li><strong>Recurse Right:</strong> Recursively apply Pre-order to the <strong>right subtree</strong>.</li>
+    </ol>
+  </div>
+
+  <h3 class="sub-title">Step-by-step Execution Trace</h3>
+  <div class="trace-wrap reveal">
+    <div class="trace-head">Execution Trace on BST (root = 50)</div>
+    <div class="trace-steps">
+      <div class="trace-row"><span class="trace-step-num">Step 1</span><span class="trace-node-badge pre-color">50</span><span class="trace-arrow">→</span><span class="trace-desc">Visit root node 50</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 2</span><span class="trace-node-badge pre-color">30</span><span class="trace-arrow">→</span><span class="trace-desc">Go left from 50; visit node 30</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 3</span><span class="trace-node-badge pre-color">20</span><span class="trace-arrow">→</span><span class="trace-desc">Go left from 30; visit node 20 (leaf)</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 4</span><span class="trace-node-badge pre-color">40</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 30; go right; visit node 40 (leaf)</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 5</span><span class="trace-node-badge pre-color">70</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 50; go right; visit node 70</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 6</span><span class="trace-node-badge pre-color">60</span><span class="trace-arrow">→</span><span class="trace-desc">Go left from 70; visit node 60 (leaf)</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 7</span><span class="trace-node-badge pre-color">80</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 70; go right; visit node 80 (leaf)</span></div>
+    </div>
+    <div class="trace-output">
+      <span class="trace-output-label">Output</span>
+      <span class="trace-node-badge pre-color">50</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">30</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">20</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">40</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">70</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">60</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge pre-color">80</span>
+    </div>
+  </div>
+
+  <div class="callout red reveal">
+    <div class="callout-icon">🌳</div>
+    <p><strong>When to use Pre-order:</strong> Use pre-order when a parent node must be processed before its children — such as <em>copying or cloning a tree</em>, <em>serialising</em> a tree structure to disk or network, or <em>printing directory listings</em> (folder name before files). The root always appears first in the output.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 05 — IN-ORDER
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="inorder">
+  <div class="section-kicker">Section 05</div>
+  <h2 class="section-title">In-order Traversal — <em>L → Root → R</em></h2>
+
+  <p>In <strong>In-order traversal</strong>, the algorithm fully explores the left subtree before visiting the current node, then explores the right subtree. For a BST, this produces all elements in <strong>ascending sorted order</strong> — making it the most important traversal for sorted data retrieval.</p>
+
+  <div class="algo-card ino reveal">
+    <div class="algo-head"><span class="dot"></span>In-order Algorithm — Left → Root → Right</div>
+    <ol class="algo-steps">
+      <li><strong>Base case:</strong> If the current node is <code>None</code>, return immediately.</li>
+      <li><strong>Recurse Left:</strong> Recursively apply In-order to the <strong>left subtree</strong>. Go as deep left as possible first.</li>
+      <li><strong>Visit Root:</strong> Process (print/store) the <strong>current node's data</strong>.</li>
+      <li><strong>Recurse Right:</strong> Recursively apply In-order to the <strong>right subtree</strong>.</li>
+    </ol>
+  </div>
+
+  <h3 class="sub-title">Step-by-step Execution Trace</h3>
+  <div class="trace-wrap reveal">
+    <div class="trace-head">Execution Trace on BST (root = 50)</div>
+    <div class="trace-steps">
+      <div class="trace-row"><span class="trace-step-num">Step 1</span><span class="trace-node-badge ino-color">20</span><span class="trace-arrow">→</span><span class="trace-desc">Descend left from 50→30→20; 20 is leftmost leaf — visit it</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 2</span><span class="trace-node-badge ino-color">30</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 30; left subtree done — visit node 30</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 3</span><span class="trace-node-badge ino-color">40</span><span class="trace-arrow">→</span><span class="trace-desc">Go right from 30; visit leaf 40</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 4</span><span class="trace-node-badge ino-color">50</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to root 50; entire left subtree done — visit root 50</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 5</span><span class="trace-node-badge ino-color">60</span><span class="trace-arrow">→</span><span class="trace-desc">Go right from 50 to 70; descend left to 60 — visit leaf 60</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 6</span><span class="trace-node-badge ino-color">70</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 70; left subtree done — visit node 70</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 7</span><span class="trace-node-badge ino-color">80</span><span class="trace-arrow">→</span><span class="trace-desc">Go right from 70; visit leaf 80 (rightmost)</span></div>
+    </div>
+    <div class="trace-output">
+      <span class="trace-output-label">Output</span>
+      <span class="trace-node-badge ino-color">20</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">30</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">40</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">50</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">60</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">70</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge ino-color">80</span>
+    </div>
+  </div>
+
+  <div class="callout green reveal">
+    <div class="callout-icon">✅</div>
+    <p><strong>The Sorted Output Property:</strong> The output <code>20 → 30 → 40 → 50 → 60 → 70 → 80</code> is in perfect ascending order. This is not a coincidence — it directly proves the BST ordering property. In-order traversal is used as the foundation for <em>BST-based sorting, database range queries, and sorted iteration</em> of sets and maps.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 06 — POST-ORDER
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="postorder">
+  <div class="section-kicker">Section 06</div>
+  <h2 class="section-title">Post-order Traversal — <em>L → R → Root</em></h2>
+
+  <p>In <strong>Post-order traversal</strong>, both subtrees are fully explored before the current node is visited. The root is always visited <em>last</em>. This "children before parent" ordering is essential for operations where a parent cannot be processed until its children have been handled.</p>
+
+  <div class="algo-card post reveal">
+    <div class="algo-head"><span class="dot"></span>Post-order Algorithm — Left → Right → Root</div>
+    <ol class="algo-steps">
+      <li><strong>Base case:</strong> If the current node is <code>None</code>, return immediately.</li>
+      <li><strong>Recurse Left:</strong> Recursively apply Post-order to the <strong>left subtree</strong> entirely.</li>
+      <li><strong>Recurse Right:</strong> Recursively apply Post-order to the <strong>right subtree</strong> entirely.</li>
+      <li><strong>Visit Root:</strong> Only after both subtrees are complete, process (print/store) the <strong>current node's data</strong>.</li>
+    </ol>
+  </div>
+
+  <h3 class="sub-title">Step-by-step Execution Trace</h3>
+  <div class="trace-wrap reveal">
+    <div class="trace-head">Execution Trace on BST (root = 50)</div>
+    <div class="trace-steps">
+      <div class="trace-row"><span class="trace-step-num">Step 1</span><span class="trace-node-badge post-color">20</span><span class="trace-arrow">→</span><span class="trace-desc">Descend to leftmost leaf 20; both children are None — visit 20</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 2</span><span class="trace-node-badge post-color">40</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 30; go right to leaf 40; both children None — visit 40</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 3</span><span class="trace-node-badge post-color">30</span><span class="trace-arrow">→</span><span class="trace-desc">Both subtrees of 30 complete — now visit node 30</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 4</span><span class="trace-node-badge post-color">60</span><span class="trace-arrow">→</span><span class="trace-desc">Go right from 50 to 70; descend left to leaf 60 — visit 60</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 5</span><span class="trace-node-badge post-color">80</span><span class="trace-arrow">→</span><span class="trace-desc">Backtrack to 70; go right to leaf 80 — visit 80</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 6</span><span class="trace-node-badge post-color">70</span><span class="trace-arrow">→</span><span class="trace-desc">Both subtrees of 70 complete — now visit node 70</span></div>
+      <div class="trace-row"><span class="trace-step-num">Step 7</span><span class="trace-node-badge post-color">50</span><span class="trace-arrow">→</span><span class="trace-desc">Both subtrees of root 50 fully processed — visit root last</span></div>
+    </div>
+    <div class="trace-output">
+      <span class="trace-output-label">Output</span>
+      <span class="trace-node-badge post-color">20</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">40</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">30</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">60</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">80</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">70</span><span class="trace-arrow">→</span>
+      <span class="trace-node-badge post-color">50</span>
+    </div>
+  </div>
+
+  <div class="callout violet reveal">
+    <div class="callout-icon">🗑️</div>
+    <p><strong>When to use Post-order:</strong> Post-order is essential when a node cannot be processed until its children are handled. Prime examples include <em>deleting a tree</em> from memory safely (children freed before parent, preventing dangling pointers), <em>evaluating expression trees</em> (operands computed before operators), and <em>compiler code generation</em> from abstract syntax trees.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 07 — CODE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="code">
+  <div class="section-kicker">Section 07</div>
+  <h2 class="section-title">Full Code <em>Implementation</em></h2>
+  <p>The following Python 3 implementation is original, fully commented, and structured using object-oriented programming. The <code>Node</code> class models each BST node; the <code>BinarySearchTree</code> class handles insertion and all three traversals using private recursive helper methods.</p>
+
+  <div class="code-block reveal">
+    <div class="code-topbar">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <span class="code-filename">bst_traversals.py</span>
+      <span class="code-lang-badge">Python 3</span>
+    </div>
+    <div class="code-body">
+      <div class="line-nums" id="line-nums"></div>
+      <pre id="code-pre"><span class="cm"># ═══════════════════════════════════════════════════════════════════════════
+# Introduction to Data Structures — Course Project
+# Group 5 | Submitted to Prof. Chinmaya Kumar Swain
+#
+# Members:  Anurag Kumar (IPM25024)  ·  Amaan (IPM25083)  ·  Veer (IPM25141)
+#           Aakarsh (IPM25002)       ·  Irfan (IPM25061)
+#
+# Topic:    In-order, Pre-order, and Post-order Traversals of a BST
+# Language: Python 3
+# ═══════════════════════════════════════════════════════════════════════════</span>
+
+
+<span class="cm"># ── Node Class ───────────────────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">Node</span>:
+    <span class="cm">"""
+    Represents a single node in a Binary Search Tree.
+
+    Attributes:
+        data  (int)  : The integer value stored in this node.
+        left  (Node) : Reference to the left child node.  None if absent.
+        right (Node) : Reference to the right child node. None if absent.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>, data):
+        <span class="slf">self</span>.data  = data
+        <span class="slf">self</span>.left  = <span class="kw">None</span>
+        <span class="slf">self</span>.right = <span class="kw">None</span>
+
+
+<span class="cm"># ── Binary Search Tree Class ──────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">BinarySearchTree</span>:
+    <span class="cm">"""
+    Binary Search Tree with insert and three DFS traversal methods.
+
+    BST Property: For every node N —
+        All values in N's left subtree  < N.data
+        All values in N's right subtree > N.data
+    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>):
+        <span class="slf">self</span>.root = <span class="kw">None</span>
+
+    <span class="cm"># ── Insertion ─────────────────────────────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">insert</span>(<span class="slf">self</span>, data):
+        <span class="cm">"""Insert a value into the BST, maintaining the BST property."""</span>
+        <span class="kw">if</span> <span class="slf">self</span>.root <span class="kw">is</span> <span class="kw">None</span>:
+            <span class="slf">self</span>.root = <span class="cl">Node</span>(data)           <span class="cm"># Tree is empty; new node becomes root</span>
+        <span class="kw">else</span>:
+            <span class="slf">self</span>._insert_rec(<span class="slf">self</span>.root, data)
+
+    <span class="kw">def</span> <span class="fn">_insert_rec</span>(<span class="slf">self</span>, current, data):
+        <span class="cm">"""Recursive helper: navigate to the correct position and insert."""</span>
+        <span class="kw">if</span> data &lt; current.data:            <span class="cm"># Go left for smaller values</span>
+            <span class="kw">if</span> current.left <span class="kw">is</span> <span class="kw">None</span>:
+                current.left = <span class="cl">Node</span>(data)
+            <span class="kw">else</span>:
+                <span class="slf">self</span>._insert_rec(current.left, data)
+        <span class="kw">elif</span> data &gt; current.data:          <span class="cm"># Go right for larger values</span>
+            <span class="kw">if</span> current.right <span class="kw">is</span> <span class="kw">None</span>:
+                current.right = <span class="cl">Node</span>(data)
+            <span class="kw">else</span>:
+                <span class="slf">self</span>._insert_rec(current.right, data)
+        <span class="cm"># Duplicates are silently ignored</span>
+
+    <span class="cm"># ── Pre-order: Root → Left → Right ────────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">preorder</span>(<span class="slf">self</span>):
+        <span class="cm">"""
+        Pre-order traversal: Root → Left → Right.
+        Returns a list of node values in pre-order sequence.
+        Use case: tree cloning, serialisation, directory listing.
+        """</span>
+        result = []
+        <span class="slf">self</span>._preorder_rec(<span class="slf">self</span>.root, result)
+        <span class="kw">return</span> result
+
+    <span class="kw">def</span> <span class="fn">_preorder_rec</span>(<span class="slf">self</span>, node, result):
+        <span class="kw">if</span> node <span class="kw">is</span> <span class="kw">None</span>:                   <span class="cm"># Base case</span>
+            <span class="kw">return</span>
+        result.append(node.data)           <span class="cm"># Step 1 — Visit Root</span>
+        <span class="slf">self</span>._preorder_rec(node.left,  result)  <span class="cm"># Step 2 — Traverse Left</span>
+        <span class="slf">self</span>._preorder_rec(node.right, result)  <span class="cm"># Step 3 — Traverse Right</span>
+
+    <span class="cm"># ── In-order: Left → Root → Right ─────────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">inorder</span>(<span class="slf">self</span>):
+        <span class="cm">"""
+        In-order traversal: Left → Root → Right.
+        Returns a list of node values in in-order sequence.
+        Key property: produces values in ASCENDING SORTED ORDER for any BST.
+        Use case: sorting, range queries, database indexing.
+        """</span>
+        result = []
+        <span class="slf">self</span>._inorder_rec(<span class="slf">self</span>.root, result)
+        <span class="kw">return</span> result
+
+    <span class="kw">def</span> <span class="fn">_inorder_rec</span>(<span class="slf">self</span>, node, result):
+        <span class="kw">if</span> node <span class="kw">is</span> <span class="kw">None</span>:                   <span class="cm"># Base case</span>
+            <span class="kw">return</span>
+        <span class="slf">self</span>._inorder_rec(node.left,  result)  <span class="cm"># Step 1 — Traverse Left</span>
+        result.append(node.data)               <span class="cm"># Step 2 — Visit Root</span>
+        <span class="slf">self</span>._inorder_rec(node.right, result)  <span class="cm"># Step 3 — Traverse Right</span>
+
+    <span class="cm"># ── Post-order: Left → Right → Root ───────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">postorder</span>(<span class="slf">self</span>):
+        <span class="cm">"""
+        Post-order traversal: Left → Right → Root.
+        Returns a list of node values in post-order sequence.
+        Root is always the LAST element in the output.
+        Use case: tree deletion, expression evaluation, code generation.
+        """</span>
+        result = []
+        <span class="slf">self</span>._postorder_rec(<span class="slf">self</span>.root, result)
+        <span class="kw">return</span> result
+
+    <span class="kw">def</span> <span class="fn">_postorder_rec</span>(<span class="slf">self</span>, node, result):
+        <span class="kw">if</span> node <span class="kw">is</span> <span class="kw">None</span>:                    <span class="cm"># Base case</span>
+            <span class="kw">return</span>
+        <span class="slf">self</span>._postorder_rec(node.left,  result)  <span class="cm"># Step 1 — Traverse Left</span>
+        <span class="slf">self</span>._postorder_rec(node.right, result)  <span class="cm"># Step 2 — Traverse Right</span>
+        result.append(node.data)                 <span class="cm"># Step 3 — Visit Root</span>
+
+
+<span class="cm"># ── Driver Code ───────────────────────────────────────────────────────────────</span>
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+
+    bst = <span class="cl">BinarySearchTree</span>()
+
+    <span class="cm"># Build the BST by inserting values in this order</span>
+    values = [<span class="nm">50</span>, <span class="nm">30</span>, <span class="nm">70</span>, <span class="nm">20</span>, <span class="nm">40</span>, <span class="nm">60</span>, <span class="nm">80</span>]
+    <span class="kw">for</span> val <span class="kw">in</span> values:
+        bst.insert(val)
+
+    <span class="cm"># Run and display all three traversals</span>
+    pre  = bst.preorder()
+    ino  = bst.inorder()
+    post = bst.postorder()
+
+    <span class="fn">print</span>(<span class="st">"=" * 50</span>)
+    <span class="fn">print</span>(<span class="st">"  BST Traversal Results"</span>)
+    <span class="fn">print</span>(<span class="st">"=" * 50</span>)
+    <span class="fn">print</span>(<span class="st">f"  Pre-order  (Root→L→R) : {pre}"</span>)
+    <span class="fn">print</span>(<span class="st">f"  In-order   (L→Root→R) : {ino}"</span>)
+    <span class="fn">print</span>(<span class="st">f"  Post-order (L→R→Root) : {post}"</span>)
+    <span class="fn">print</span>(<span class="st">"=" * 50</span>)
+    <span class="fn">print</span>(<span class="st">f"  ✓ In-order is sorted: {ino == sorted(values)}"</span>)
+    <span class="fn">print</span>(<span class="st">"=" * 50</span>)</pre>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Expected Output</h3>
+  <div class="terminal reveal">
+    <div class="terminal-bar">python bst_traversals.py</div>
+    <div class="terminal-body">
+      <p>==================================================</p>
+      <p>&nbsp;&nbsp;BST Traversal Results</p>
+      <p>==================================================</p>
+      <p><span class="t-label">&nbsp;&nbsp;Pre-order  (Root→L→R) : </span><span class="t-pre">[50, 30, 20, 40, 70, 60, 80]</span></p>
+      <p><span class="t-label">&nbsp;&nbsp;In-order   (L→Root→R) : </span><span class="t-ino">[20, 30, 40, 50, 60, 70, 80]</span></p>
+      <p><span class="t-label">&nbsp;&nbsp;Post-order (L→R→Root) : </span><span class="t-post">[20, 40, 30, 60, 80, 70, 50]</span></p>
+      <p>==================================================</p>
+      <p><span class="t-label">&nbsp;&nbsp;✓ In-order is sorted: </span><span class="t-ino">True</span></p>
+      <p>==================================================</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 08 — COMPLEXITY
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="complexity">
+  <div class="section-kicker">Section 08</div>
+  <h2 class="section-title">Time &amp; Space <em>Complexity Analysis</em></h2>
+
+  <p>All three traversal algorithms visit every node in the BST <strong>exactly once</strong>. No node is visited twice; no node is skipped. This immediately establishes that all traversals run in <strong>O(n)</strong> time, where <em>n</em> is the total number of nodes.</p>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Time Complexity</th>
+          <th>Space (Call Stack)</th>
+          <th>Best Case</th>
+          <th>Worst Case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tc-trav pre">Pre-order</span></td>
+          <td><span class="tc-mono tc-good">O(n)</span></td>
+          <td><span class="tc-mono">O(h)</span></td>
+          <td><span class="tc-mono">O(log n)</span></td>
+          <td><span class="tc-mono">O(n)</span></td>
+        </tr>
+        <tr>
+          <td><span class="tc-trav ino">In-order</span></td>
+          <td><span class="tc-mono tc-good">O(n)</span></td>
+          <td><span class="tc-mono">O(h)</span></td>
+          <td><span class="tc-mono">O(log n)</span></td>
+          <td><span class="tc-mono">O(n)</span></td>
+        </tr>
+        <tr>
+          <td><span class="tc-trav post">Post-order</span></td>
+          <td><span class="tc-mono tc-good">O(n)</span></td>
+          <td><span class="tc-mono">O(h)</span></td>
+          <td><span class="tc-mono">O(log n)</span></td>
+          <td><span class="tc-mono">O(n)</span></td>
+        </tr>
+        <tr>
+          <td>BST Insert (single)</td>
+          <td><span class="tc-mono tc-good">O(log n)</span></td>
+          <td><span class="tc-mono">O(1)</span></td>
+          <td><span class="tc-mono">O(log n)</span></td>
+          <td><span class="tc-mono">O(n)</span></td>
+        </tr>
+        <tr>
+          <td>BST Search</td>
+          <td><span class="tc-mono tc-good">O(log n)</span></td>
+          <td><span class="tc-mono">O(1)</span></td>
+          <td><span class="tc-mono">O(1)</span></td>
+          <td><span class="tc-mono">O(n)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Where <em>h</em> denotes the <strong>height</strong> of the BST:</p>
+  <ul>
+    <li><strong>Balanced BST:</strong> h = ⌊log₂(n)⌋ → Space = O(log n). For our 7-node tree, h = 2, so the recursion stack depth is at most 3 frames.</li>
+    <li><strong>Degenerate (skewed) BST:</strong> Inserting already-sorted data (e.g., 10, 20, 30, 40…) creates a "right chain" where h = n − 1. Space degrades to O(n) and the BST loses its efficiency advantage. AVL Trees or Red-Black Trees solve this via auto-balancing.</li>
+  </ul>
+
+  <div class="callout gold reveal">
+    <div class="callout-icon">⚠️</div>
+    <p><strong>Space Note on Recursion:</strong> Each recursive call consumes one stack frame. The maximum number of simultaneous stack frames equals the height <em>h</em>. For our balanced 7-node BST, this is 3 frames — very efficient. In production systems with millions of nodes, iterative traversal using an explicit stack is preferred to avoid stack overflow risks.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 09 — APPLICATIONS
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="applications">
+  <div class="section-kicker">Section 09</div>
+  <h2 class="section-title">Real-world <em>Applications</em></h2>
+
+  <p>BST traversals are not abstract academic exercises — they are foundational to real-world systems across databases, operating systems, compilers, and artificial intelligence. The choice of traversal order directly determines what can be achieved.</p>
+
+  <div class="app-grid reveal">
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#fdf0ee;">📁</div>
+      <div>
+        <h4>File System Traversal <span class="tag-pill pre">Pre</span></h4>
+        <p>Operating systems represent directories as trees. Pre-order lists parent folders before their contents — used in <code>ls -R</code>, <code>find</code>, and file explorers. The parent must appear before its children.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#edfaf2;">🗃️</div>
+      <div>
+        <h4>Database Index Range Queries <span class="tag-pill ino">In</span></h4>
+        <p>SQL engines use B+ trees for indexes. In-order traversal enables efficient range scans — finding all records with keys between <em>a</em> and <em>b</em> in sorted order. The backbone of SQL <code>WHERE key BETWEEN a AND b</code>.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#fdf0ee;">📤</div>
+      <div>
+        <h4>Tree Serialisation &amp; Cloning <span class="tag-pill pre">Pre</span></h4>
+        <p>Pre-order output uniquely encodes a BST structure. The same tree can be reconstructed from this sequence. Used to persist BSTs to disk, send over a network, or deep-copy a tree data structure.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#f3eeff;">🧮</div>
+      <div>
+        <h4>Expression Tree Evaluation <span class="tag-pill post">Post</span></h4>
+        <p>Arithmetic expressions are stored as trees (operators at internal nodes, operands at leaves). Post-order evaluates operands before operators — the natural evaluation order for stack-based calculators and compilers.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#edfaf2;">🔢</div>
+      <div>
+        <h4>BST Sort Algorithm <span class="tag-pill ino">In</span></h4>
+        <p>Insert <em>n</em> elements into a BST (O(n log n)), then in-order traverse (O(n)) to retrieve them sorted. This is the basis of <em>Tree Sort</em>, a comparison-based sorting algorithm with the same average complexity as heapsort.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#f3eeff;">🗑️</div>
+      <div>
+        <h4>Safe Memory Deallocation <span class="tag-pill post">Post</span></h4>
+        <p>In C/C++, freeing a tree requires freeing children before the parent node. Post-order ensures no dangling pointers are created. Garbage collectors in managed languages use similar bottom-up approaches.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#fdf0ee;">🌳</div>
+      <div>
+        <h4>Abstract Syntax Trees (Compilers) <span class="tag-pill pre">Pre</span></h4>
+        <p>Compilers parse source code into ASTs. Pre-order traversal generates intermediate code top-down; post-order generates code bottom-up (children evaluated before parent operations). Different compiler phases use different traversals.</p>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon-wrap" style="background:#edfaf2;">🤖</div>
+      <div>
+        <h4>AI Decision Trees <span class="tag-pill ino">In</span><span class="tag-pill post">Post</span></h4>
+        <p>Machine learning decision trees use in-order traversal to extract sorted feature thresholds, and post-order for bottom-up pruning — removing leaf nodes that don't improve accuracy, starting from leaves and working up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 10 — CONCLUSION
+     ═══════════════════════════════════════════════════════════ -->
+<section class="content" id="conclusion">
+  <div class="section-kicker">Section 10</div>
+  <h2 class="section-title">Conclusion</h2>
+
+  <p>This project investigated the <strong>Binary Search Tree</strong> — a hierarchical data structure that enforces a strict ordering property enabling efficient search, insertion, and sorted traversal in O(log n) time for balanced trees. We designed, traced, and implemented all three canonical depth-first traversal strategies.</p>
+
+  <p>The key insight is that the <em>same recursive structure</em> of the BST underpins all three algorithms — only the moment of processing changes. In-order yields sorted output by always visiting left children first; Pre-order clones or serialises by visiting the root first; Post-order safely deletes or evaluates by visiting the root last.</p>
+
+  <p>All three algorithms are O(n) in time and O(h) in space, where h is the tree height. Their simplicity, power, and wide applicability make them foundational knowledge for any computer science student.</p>
+
+  <div class="stats-row reveal">
+    <div class="stat-card">
+      <span class="stat-num">3</span>
+      <p>Traversal algorithms fully analysed and implemented</p>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">O(n)</span>
+      <p>Time complexity — every node visited exactly once</p>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">7</span>
+      <p>Nodes in sample BST used to validate all traversals</p>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">8+</span>
+      <p>Real-world applications identified across CS domains</p>
+    </div>
+  </div>
+
+  <div class="callout navy reveal">
+    <div class="callout-icon">🎓</div>
+    <p><strong>Learning Outcomes:</strong> Through this project, Group 5 developed a thorough understanding of recursive algorithm design, the BST data structure and its invariants, depth-first search strategies, and the relationship between traversal order and practical utility — foundations central to advanced algorithm design and systems programming.</p>
+  </div>
+
+  <h3 class="sub-title">References</h3>
+  <ol style="color:var(--ink-dim);">
+    <li>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2009). <em>Introduction to Algorithms</em> (3rd ed.). MIT Press. — Chapter 12: Binary Search Trees.</li>
+    <li>Sedgewick, R., &amp; Wayne, K. (2011). <em>Algorithms</em> (4th ed.). Addison-Wesley. — Section 3.2: Binary Search Trees.</li>
+    <li>Knuth, D. E. (1997). <em>The Art of Computer Programming, Vol. 1: Fundamental Algorithms</em> (3rd ed.). Addison-Wesley. — Section 2.3: Trees.</li>
+    <li>Python Software Foundation. (2024). <em>Python 3 Documentation</em>. https://docs.python.org/3/</li>
+  </ol>
+</section>
+
+<footer>
+  <strong>Group 5</strong> &nbsp;·&nbsp; Introduction to Data Structures<br/>
+  Anurag Kumar (IPM25024) &nbsp;·&nbsp; Amaan (IPM25083) &nbsp;·&nbsp; Veer (IPM25141) &nbsp;·&nbsp; Aakarsh (IPM25002) &nbsp;·&nbsp; Irfan (IPM25061)<br/><br/>
+  Submitted to &nbsp;<strong>Prof. Chinmaya Kumar Swain</strong> &nbsp;·&nbsp; Academic Year 2024–25
+</footer>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+/* ── Line numbers ── */
+(function(){
+  const pre = document.getElementById('code-pre');
+  const ln  = document.getElementById('line-nums');
+  if(!pre || !ln) return;
+  const lines = pre.textContent.split('\n').length;
+  ln.innerHTML = Array.from({length:lines},(_,i)=>`<span>${i+1}</span>`).join('');
+})();
+
+/* ── Scroll reveal ── */
+const revEls = document.querySelectorAll('.reveal');
+const revIO  = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('vis'); revIO.unobserve(e.target); } });
+},{threshold:0.08});
+revEls.forEach(el=>revIO.observe(el));
+
+/* ── Active nav ── */
+const secs = document.querySelectorAll('[id]');
+const navAs = document.querySelectorAll('nav a');
+const navIO = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navAs.forEach(a=>a.classList.remove('active'));
+      const t = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if(t) t.classList.add('active');
+    }
+  });
+},{threshold:0.35});
+secs.forEach(s=>navIO.observe(s));
+
+/* ══════════════════════════════════════════════════
+   INTERACTIVE TRAVERSAL VISUALIZER
+   ══════════════════════════════════════════════════ */
+const TRAVERSALS = {
+  pre:  { seq:[50,30,20,40,70,60,80], fill:'#c0392b', stroke:'#e57373', listColor:'rgba(192,57,43,0.2)', textColor:'#e57373', label:'Pre-order (Root → Left → Right)' },
+  ino:  { seq:[20,30,40,50,60,70,80], fill:'#27ae60', stroke:'#66bb6a', listColor:'rgba(39,174,96,0.15)', textColor:'#66bb6a', label:'In-order (Left → Root → Right)' },
+  post: { seq:[20,40,30,60,80,70,50], fill:'#6c3483', stroke:'#ab8cdb', listColor:'rgba(108,52,131,0.15)', textColor:'#ab8cdb', label:'Post-order (Left → Right → Root)' }
+};
+const NODE_IDS = [50,30,70,20,40,60,80];
+const IDLE_FILL='#1e3a6e', IDLE_STROKE='#2d4a8a';
+const DONE_FILL='#1a3a28', DONE_STROKE='#2d6a45';
+
+let vizTimer = null;
+let running  = false;
+
+function resetViz(){
+  clearTimeout(vizTimer);
+  running = false;
+  NODE_IDS.forEach(id=>{
+    const c = document.getElementById('vn'+id);
+    if(c){ c.style.fill=IDLE_FILL; c.style.stroke=IDLE_STROKE; c.style.filter=''; }
+  });
+  document.getElementById('viz-output').innerHTML = '';
+  document.getElementById('viz-status').textContent = 'Press a traversal button to start';
+  document.getElementById('viz-step-label').textContent = 'Select a traversal to begin';
+  document.querySelectorAll('.viz-btn').forEach(b=>b.disabled=false);
+}
+
+function runViz(type){
+  if(running) return;
+  resetViz();
+  running = true;
+  document.querySelectorAll('.viz-btn').forEach(b=>b.disabled=true);
+
+  const t   = TRAVERSALS[type];
+  const seq = t.seq;
+  const out = document.getElementById('viz-output');
+  const spd = parseInt(document.getElementById('viz-speed').value);
+  const statusEl = document.getElementById('viz-status');
+  const stepEl   = document.getElementById('viz-step-label');
+
+  stepEl.textContent = t.label;
+  statusEl.textContent = 'Running…';
+
+  let step = 0;
+  let prevId = null;
+
+  function tick(){
+    if(step > 0 && prevId !== null){
+      // Mark previous as "done" (green tint)
+      const prev = document.getElementById('vn'+prevId);
+      if(prev){ prev.style.fill=DONE_FILL; prev.style.stroke=DONE_STROKE; prev.style.filter=''; }
+    }
+    if(step >= seq.length){
+      statusEl.textContent = `✓ ${t.label} complete!`;
+      document.querySelectorAll('.viz-btn').forEach(b=>b.disabled=false);
+      running = false;
+      return;
+    }
+
+    const val = seq[step];
+    const circle = document.getElementById('vn'+val);
+    if(circle){
+      circle.style.fill   = t.fill;
+      circle.style.stroke = t.stroke;
+      circle.style.filter = `drop-shadow(0 0 8px ${t.stroke})`;
+    }
+    prevId = val;
+
+    // Add to output list
+    const li = document.createElement('li');
+    li.style.background = t.listColor;
+    li.style.border     = `1px solid ${t.fill}44`;
+    li.innerHTML = `<span class="step-idx">${step+1}</span><span style="color:${t.textColor};font-weight:600;">${val}</span>`;
+    out.appendChild(li);
+    li.scrollIntoView({block:'nearest'});
+
+    step++;
+    vizTimer = setTimeout(tick, spd);
+  }
+  tick();
+}
+</script>
+</body>
+</html>
